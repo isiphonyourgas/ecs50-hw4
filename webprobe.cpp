@@ -19,6 +19,7 @@ void *probe( void *n)
   // how long it takes to run wget and then place the
   // running times in the recent array and the total
   // accesses to the accesses array.
+  // can we just convert Matloff's probe function to c++ here?
   cout << "Probe\n";
 
 }
