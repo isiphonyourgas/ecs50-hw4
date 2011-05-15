@@ -1,7 +1,11 @@
 // Aaron Okano, Jason Wong, Meenal Tambe, Gowtham Vijayaragavan
 #include <iostream>
 #include <pthread.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <fstream>
+#include <string>
 #include <cstdlib>
 #include <ctime>
 using namespace std;
@@ -19,7 +23,24 @@ void *probe( void *n)
   // how long it takes to run wget and then place the
   // running times in the recent array and the total
   // accesses to the accesses array.
-  cout << "Probe\n";
+  string url;
+  pid_t pID;
+  int stat;
+  clock_t clo;
+  double timer;
+  getline( urlfile, url );
+  clo = clock();
+  pID = fork();
+  if( pID == 0 )
+  {
+    execlp("wget","wget","--spider","-q",url.c_str(),NULL);
+  }
+  else
+  {
+    waitpid( pID, &stat, NULL );
+  }
+  timer = (clock() - (double)clo)/CLOCKS_PER_SEC;
+  cout << "Probe time: " << timer << endl;
 
 }
 
@@ -51,7 +72,7 @@ int main( int argc, char *argv[] )
   
   // Create the probe threads
   int i;
-  clock_t clo;
+  clock_t clo = clock();
   for( i = 0; i < numthreads-1; i++ )
     pthread_create( &id[i], NULL, &probe, (void*) i );
   // Create the reporting thread
