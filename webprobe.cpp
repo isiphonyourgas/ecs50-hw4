@@ -30,6 +30,23 @@ void *reporter( void *threads )
   cout << "Reporter\n";
 }
 
+void load_recent(int wwidth, double time){
+  for (int i = 0; i < wwidth; i++){
+    if (recent[wwidth] == -1){
+      break; 
+  }
+  // if i == wwidth, then array recent is full. Have to overwrite. 
+  if (i == wwidth){
+    for (int j = 0; j < wwidth-1; j++){
+      recent[j] = recent[j + 1];  
+    }
+  recent[wwidth] = time; 
+  }
+  //else iterator i stopped at a empty array position. 
+  //Fill that position with the time to input. 
+  else recent[i] = time;      
+}
+
 int main( int argc, char *argv[] )
 {
   // Check if the number of arguments lines up.
@@ -47,11 +64,13 @@ int main( int argc, char *argv[] )
   // Now set up the arrays
   pthread_t *id = new pthread_t[numthreads];
   accesses = new int[numthreads];
-  recent = new double[numthreads];
-  
+  recent = new double[wwidth];
+  for( int i = 0; i < wwidth; i++){
+    recent[i] = -1; 
+  }
   // Create the probe threads
   int i;
-  clock_t clo;
+  clock_t clo = clock(); 
   for( i = 0; i < numthreads-1; i++ )
     pthread_create( &id[i], NULL, &probe, (void*) i );
   // Create the reporting thread
