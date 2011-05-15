@@ -58,6 +58,3 @@ webprobe <- function(sitefile,ww) {
    }
 }
 
-D
-A
-
