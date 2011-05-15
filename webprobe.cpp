@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include <rcpp.h>
 using namespace std;
 
 // These will be arrays with a size to be defined later.
@@ -19,6 +20,7 @@ void *probe( void *n)
   // how long it takes to run wget and then place the
   // running times in the recent array and the total
   // accesses to the accesses array.
+  // can we just convert Matloff's probe function to c++ here?
   cout << "Probe\n";
 
 }
