@@ -8,6 +8,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <rcpp.h>
 using namespace std;
 
 // These will be arrays with a size to be defined later.
@@ -41,6 +42,8 @@ void *probe( void *n)
   }
   timer = (clock() - (double)clo)/CLOCKS_PER_SEC;
   cout << "Probe time: " << timer << endl;
+  // can we just convert Matloff's probe function to c++ here?
+  cout << "Probe\n";
 
 }
 
