@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include <rcpp.h>
 using namespace std;
 
 // These will be arrays with a size to be defined later.
