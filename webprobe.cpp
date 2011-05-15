@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <fstream>
 #include <cstdlib>
+#include <ctime>
 using namespace std;
 
 // These will be arrays with a size to be defined later.
@@ -19,6 +20,7 @@ void *probe( void *n)
   // running times in the recent array and the total
   // accesses to the accesses array.
   cout << "Probe\n";
+
 }
 
 void *reporter( void *threads )
@@ -49,10 +51,14 @@ int main( int argc, char *argv[] )
   
   // Create the probe threads
   int i;
+  clock_t clo;
   for( i = 0; i < numthreads-1; i++ )
     pthread_create( &id[i], NULL, &probe, (void*) i );
   // Create the reporting thread
   pthread_create( &id[numthreads-1], NULL, &reporter, (void*) numthreads );
+  double timer = (clock() - clo)/(double)CLOCKS_PER_SEC;
+
+  cout << "Time: " << timer << endl;
 
   for( i = 0; i < numthreads; i++ )
     pthread_join( id[i], NULL );
