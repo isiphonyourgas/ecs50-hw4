@@ -10,6 +10,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <iomanip>
 using namespace std;
 
 // These will be arrays with a size to be defined later.
@@ -112,8 +113,9 @@ double findStdDev()
   for( i = 0; i < wwidth || recent[i] == -1; i++ )
   {
     num = recent[i];
-    stdDev += ( num - mean) * ( num - mean) / i;
+    stdDev += ( num - mean) * ( num - mean);
   }
+  stdDev = stdDev / (wwidth - 1);
   return sqrt(stdDev);
 }
 
@@ -132,7 +134,7 @@ void *reporter( void *threads )
   mean = findMean();
   sd = findStdDev();
   cout << "\n\nRecent times:\n";
-  cout << "Mean: " << mean << endl << "Standard Deviation: " << sd << endl;
+  cout << "Mean: " << mean << endl << "Standard Deviation: " << setprecision(10) << sd << endl;
   for(i = 0; i < (int)threads; i++)
     cout << "Threads " << i << ": " << accesses[i] << endl;
   pthread_mutex_unlock(&mutex2);
