@@ -86,7 +86,6 @@ void *probe( void *num)
       // Increment the count for number of accesses
       accesses[n]++;
       pthread_mutex_unlock( &mutex2 );
-      cout << "Probe time: " << timer << endl;
     }
   }
   return 0;
