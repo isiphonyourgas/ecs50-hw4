@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cmath>
 #include <fstream>
 #include <string>
 #include <cstdlib>
@@ -50,6 +51,7 @@ void *probe( void *num)
   // running times in the recent array and the total
   // accesses to the accesses array.
   int n = reinterpret_cast<int>( num );
+  accesses[n] = 0;
   string url;
   pid_t pID;
   int stat;
@@ -89,6 +91,33 @@ void *probe( void *num)
   }
   return 0;
 }
+
+// These two functions are for use by reporter
+double findMean()
+{
+  double mean = 0;
+  int i;
+  for( i = 0; i < wwidth || recent[i] == -1; i++ )
+  {
+    mean += recent[i];
+  }
+  return mean / i;
+}
+
+double findStdDev()
+{
+  double stdDev = 0;
+  double mean = findMean();
+  double num;
+  int i;
+  for( i = 0; i < wwidth || recent[i] == -1; i++ )
+  {
+    num = recent[i];
+    stdDev += ( num - mean) * ( num - mean) / i;
+  }
+  return sqrt(stdDev);
+}
+
 
 void *reporter( void *threads )
 {
