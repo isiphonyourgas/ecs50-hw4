@@ -94,6 +94,16 @@ void *reporter( void *threads )
 {
   // All this function needs to do is read the values in
   // accesses and recent and print them out.
+  double length = 10.0/((int)threads) * 1000000;
+  int i;
+  while(1)
+  {
+    usleep(length);
+  pthread_mutex_lock( &mutex2 );
+  cout << "\n\nRecent times:\n";
+//  for(i = 0; i < 
+  }
+
   cout << "Reporter\n";
 }
 
