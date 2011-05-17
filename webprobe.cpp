@@ -27,8 +27,9 @@ ifstream urlfile;
 
 // Store the wwidth most recent run times
 void load_recent(double time){
-  for (int i = 0; i < wwidth; i++){
-    if (recent[wwidth] == -1){
+  int i;
+  for (i = 0; i < wwidth; i++){
+    if (recent[i] == -1)
       break; 
   }
   // if i == wwidth, then array recent is full. Have to overwrite. 
@@ -36,12 +37,11 @@ void load_recent(double time){
     for (int j = 0; j < wwidth-1; j++){
       recent[j] = recent[j + 1];  
     }
-  recent[wwidth] = time; 
+    recent[wwidth-1] = time; 
   }
   //else iterator i stopped at a empty array position. 
   //Fill that position with the time to input. 
   else recent[i] = time;      
-  }
 }
 
 // Probing function to be run by threads
@@ -61,15 +61,23 @@ void *probe( void *num)
   while(1)
   {
     pthread_mutex_lock( &mutex1 );
+    if( urlfile.eof() )
+    {
+      urlfile.seekg(0, ios::beg);
+      urlfile.clear();
+    }
     getline( urlfile, url );
     pthread_mutex_unlock( &mutex1 );
     gettimeofday( &time1, 0 );
     pID = fork();
     if( pID == 0 )
     {
-      execlp("wget","wget","--spider","-q",url.c_str(),NULL);
+      execlp("wget","wget","--spider",url.c_str(),NULL);
     }
-
+    else
+    {
+      waitpid( pID, &stat, 0 );
+    }
     gettimeofday( &time2, 0 );
     if( stat == 0 )
     {
@@ -77,17 +85,13 @@ void *probe( void *num)
       timer = 1000000 * (time2.tv_sec - time1.tv_sec) + 
           (time2.tv_usec - time1.tv_usec);
       timer /= 1000000;
-      // load_time() makes changes to a couple shared variables,
+      // load_recent() makes changes to a couple shared variables,
       // so we lock this section first
       pthread_mutex_lock( &mutex2 );
       load_recent(timer);
       // Increment the count for number of accesses
       accesses[n]++;
       pthread_mutex_unlock( &mutex2 );
-    }
-    else
-    {
-      waitpid( pID, &stat, 0 );
     }
   }
   return 0;
@@ -98,7 +102,7 @@ double findMean()
 {
   double mean = 0;
   int i;
-  for( i = 0; i < wwidth || recent[i] == -1; i++ )
+  for( i = 0; i < wwidth && recent[i] != -1; i++ )
   {
     mean += recent[i];
   }
@@ -111,12 +115,12 @@ double findStdDev()
   double mean = findMean();
   double num;
   int i;
-  for( i = 0; i < wwidth || recent[i] == -1; i++ )
+  for( i = 0; i < wwidth && recent[i] != -1; i++ )
   {
     num = recent[i];
     stdDev += ( num - mean) * ( num - mean);
   }
-  stdDev = stdDev / (wwidth - 1);
+  stdDev = stdDev / i;
   return sqrt(stdDev);
 }
 
@@ -126,24 +130,18 @@ void *reporter( void *threads )
   // All this function needs to do is read the values in
   // accesses and recent and print them out.
   double length = 10.0/((int)threads) * 1000000;
-  double sd, mean;
   int i;
   while(1)
   {
-  usleep(length);
-  pthread_mutex_lock( &mutex2 );
-  mean = findMean();
-  sd = findStdDev();
-  cout << "\n\nRecent times:\n";
-  cout << "Mean: " << mean << endl;
-  // The standard deviation is always zero when you run the program. it doesn't seem to be very helpful...
-  //"Standard Deviation: " << setprecision(10) << sd << endl;
-  for(i = 0; i < (int)threads; i++)
-    cout << "Threads " << i << ": " << accesses[i] << endl;
-  pthread_mutex_unlock(&mutex2);
+    usleep(length);
+    pthread_mutex_lock( &mutex2 );
+    cout << "\n\nRecent times:\n";
+    cout << "Mean: " << findMean() << endl;
+    cout << "Standard Deviation: " << setprecision(10) << findStdDev() << endl;
+    for(i = 0; i < (int)threads; i++)
+      cout << "Threads " << i << ": " << accesses[i] << endl;
+    pthread_mutex_unlock(&mutex2);
   }
-
-  cout << "Reporter\n";
 }
 
 int main( int argc, char *argv[] )
@@ -170,7 +168,7 @@ int main( int argc, char *argv[] )
   // Create the probe threads
   int i;
   for( i = 0; i < numthreads-1; i++ )
-    pthread_create( &id[i], NULL, &probe, reinterpret_cast<void*>(i) );
+    pthread_create( &id[i], NULL, &probe, (void*)i );
   // Create the reporting thread
   pthread_create( &id[numthreads - 1], NULL, &reporter, (void*)numthreads );
 
