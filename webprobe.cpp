@@ -63,8 +63,8 @@ void *probe( void *num)
     pthread_mutex_lock( &mutex1 );
     if( urlfile.eof() )
     {
-      urlfile.seekg(0, ios::beg);
       urlfile.clear();
+      urlfile.seekg(0, ios_base::beg);
     }
     getline( urlfile, url );
     pthread_mutex_unlock( &mutex1 );
@@ -72,7 +72,7 @@ void *probe( void *num)
     pID = fork();
     if( pID == 0 )
     {
-      execlp("wget","wget","--spider",url.c_str(),NULL);
+      execlp("wget","wget","--spider","-q",url.c_str(),NULL);
     }
     else
     {
@@ -138,8 +138,8 @@ void *reporter( void *threads )
     cout << "\n\nRecent times:\n";
     cout << "Mean: " << findMean() << endl;
     cout << "Standard Deviation: " << setprecision(10) << findStdDev() << endl;
-    for(i = 0; i < (int)threads; i++)
-      cout << "Threads " << i << ": " << accesses[i] << endl;
+    for(i = 0; i < (int)threads-1; i++)
+      cout << "Threads " << i+1 << ": " << accesses[i] << endl;
     pthread_mutex_unlock(&mutex2);
   }
 }
