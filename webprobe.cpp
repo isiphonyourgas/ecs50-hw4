@@ -49,7 +49,7 @@ void *probe( void *num)
   // how long it takes to run wget and then place the
   // running times in the recent array and the total
   // accesses to the accesses array.
-  int n = (int) num;
+  int n = reinterpret_cast<int>( num );
   string url;
   pid_t pID;
   int stat;
@@ -121,7 +121,7 @@ int main( int argc, char *argv[] )
   // Create the probe threads
   int i;
   for( i = 0; i < numthreads-1; i++ )
-    pthread_create( &id[i], NULL, &probe, (void*) i );
+    pthread_create( &id[i], NULL, &probe, reinterpret_cast<void*>(i) );
   // Create the reporting thread
   pthread_create( &id[numthreads-1], NULL, &reporter, (void*) numthreads );
 
