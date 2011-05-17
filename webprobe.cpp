@@ -69,10 +69,7 @@ void *probe( void *num)
     {
       execlp("wget","wget","--spider","-q",url.c_str(),NULL);
     }
-    else
-    {
-      waitpid( pID, &stat, 0 );
-    }
+
     gettimeofday( &time2, 0 );
     if( stat == 0 )
     {
@@ -87,6 +84,10 @@ void *probe( void *num)
       // Increment the count for number of accesses
       accesses[n]++;
       pthread_mutex_unlock( &mutex2 );
+    }
+    else
+    {
+      waitpid( pID, &stat, 0 );
     }
   }
   return 0;
@@ -134,11 +135,12 @@ void *reporter( void *threads )
   mean = findMean();
   sd = findStdDev();
   cout << "\n\nRecent times:\n";
-  cout << "Mean: " << mean << endl << "Standard Deviation: " << setprecision(10) << sd << endl;
+  cout << "Mean: " << mean << endl;
+  // The standard deviation is always zero when you run the program. it doesn't seem to be very helpful...
+  //"Standard Deviation: " << setprecision(10) << sd << endl;
   for(i = 0; i < (int)threads; i++)
     cout << "Threads " << i << ": " << accesses[i] << endl;
   pthread_mutex_unlock(&mutex2);
-
   }
 
   cout << "Reporter\n";
@@ -149,7 +151,7 @@ int main( int argc, char *argv[] )
   // Check if the number of arguments lines up.
   if( argc != 4 )
   {
-    cout << "Too few arguments" << endl;
+    cout << "There are too few arguments" << endl;
     cout << "Usage: webprobe urlfile wwidth numthreads" << endl;
     return 0;
   }
@@ -170,7 +172,7 @@ int main( int argc, char *argv[] )
   for( i = 0; i < numthreads-1; i++ )
     pthread_create( &id[i], NULL, &probe, reinterpret_cast<void*>(i) );
   // Create the reporting thread
-  pthread_create( &id[numthreads-1], NULL, &reporter, (void*) numthreads );
+  pthread_create( &id[numthreads - 1], NULL, &reporter, (void*)numthreads );
 
   for( i = 0; i < numthreads; i++ )
     pthread_join( id[i], NULL );
