@@ -124,13 +124,20 @@ void *reporter( void *threads )
   // All this function needs to do is read the values in
   // accesses and recent and print them out.
   double length = 10.0/((int)threads) * 1000000;
+  double sd, mean;
   int i;
   while(1)
   {
-    usleep(length);
+  usleep(length);
   pthread_mutex_lock( &mutex2 );
+  mean = findMean();
+  sd = findStdDev();
   cout << "\n\nRecent times:\n";
-//  for(i = 0; i < 
+  cout << "Mean: " << mean << endl << "Standard Deviation: " << sd << endl;
+  for(i = 0; i < (int)threads; i++)
+    cout << "Threads " << i << ": " << accesses[i] << endl;
+  pthread_mutex_unlock(&mutex2);
+
   }
 
   cout << "Reporter\n";
