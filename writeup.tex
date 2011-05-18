@@ -1,20 +1,62 @@
 \documentclass[12pt,letterpaper]{article}
+\usepackage{verbatim}
 \title{Homework 4 Write-Up}
 \author{Aaron Okano, Jason Wong, Meenal Tambe, and Gowtham Vijayaragavan}
 
 \begin{document}
 \maketitle
 \setcounter{page}{1}
-\textit{\textbf{Write a COGENT explanation, along the lines of the "Gowtham and Noelle" story in class, of how the threads take turns in this application. Explain why it may be useful to have more threads than CPU cores for this program but not for the prime finder above.}}
+\textit{\textbf{Write a COGENT explanation, along the lines of the ``Gowtham
+and Noelle'' story in class, of how the threads take turns in this
+application. Explain why it may be useful to have more threads than CPU cores
+for this program but not for the prime finder above.}}
 \newline
 
 \linespread{1.5}
-In the program, a we needed to be create a web probe that would read through a list of URLs in a file using a number of threads that the user entered. The file, urls.txt contains a list of URLs to use as examples. During the execution of the program, the user needed to enter ./webprobe urls.txt followed by two numbers to let the program know how many threads to produce in order to run the program. The first number was used to find the number of time the thread needed to access the web and the second number was needed to create the probe threads and the reporting thread. 
+In the program, we needed to create a web probe that would read through
+a list of URLs in a file using the number of threads that the user specifies.
+The file---in our case, urls.txt---contains a list of URLs to probe. The program
+takes three arguments, to be given in the following format:
+\begin{verbatim}
+% webprobe <URL file> <window width> <number of threads>
+\end{verbatim}
+The output of the program consists of the mean and standard deviation of the
+{\bf window width} most recent probe times and the number of accesses performed
+by each thread.
 
-At the begnning of the program, the load\_recent function was made in order to read in wwidth's mose recent times. A "for" loop was made in order to continuously read in the most recent time as the program ran. the next for loops was used if i was equal to wwidth. If this scenario occured, then whatever was written in wwidth before would be overwritten by the new value. This is how the program was able to read the most recent access time. 
+The {\bf main()} function begins by initializing all the variables and arrays
+in accordance with the arguments. Then the ``probe'' threads, which each work to 
+probe a URL, are created as well as the ``reporter'' thread. Afterwards, it simply
+waits for the threads to finish---a condition which is not met, since the threads
+immediately begin an infinite loop.
 
-In the main function, all the variables and arrays are set up initially. Then the probe threads, which each work to probe a URL, are created. Then, the reporter thread is created. In the probe() function, a section of the code is locked, so that other threads cannot execute it. Then, a line is read, and it is unlocked. The locking occurs because many threads may be modifying the same thing, so it is a safeguard. Locking and unlocking was one of the most crucial components of the program. The time is checked per access, and the time is added to the global array with a max capacity of wwidth. The access count is then incremented. After the URLs are probed by the probe threads, the reporter thread is used to present the mean and standard deviation of the last wwidth probe results.
+When each ``probe'' is created, it begins execution of the {\bf probe()} function. 
+Because several threads will be accessing and writing to the same sets of data
+(namely, the file pointer and the list of most recent accesses) {\bf probe()} makes
+use of mutual exclusion objects (mutexes) which to coordinate the threads. The
+mutexes themselves act as locks, which, after locked by the first thread to
+encounter {\bf pthread\_mutex\_lock()}, prevent other threads from executing the
+code following that point until the mutex is unlocked. The actual probing and
+recording of access times is performed by first recording the time of day, forking
+a \verb wget  process, recording the time of day after \verb wget  exits, and
+finally, finding the difference between the two times and inserting the value
+into an array of the {\bf window width} most recent times using the function
+{\bf load\_recent()}. The function then continues to loop this cycle until
+termination.
 
-Because the instructions asked to "repeatedly cycle through the list," the only way webprobe.cpp would be terminated was through the ctrl+c option, since the program needed to run continuously. Similar to the example on page 186 in the text, the threads in this program gave the illusion of a multi-tasking CPU, while in reality, everything was merely pushed onto the same stack. 
+The single ``reporter'' thread, as can probably be guessed, executes the
+{\bf reporter()} function. This function is set to sleep for 10.0 / number of
+threads seconds using the usleep command. After sleeping, it first locks the
+mutex to prevent the probe threads from accessing the data it needs to read.
+Then it prints the mean and standard deviation of the most recent accesses
+along with the number of accesses made by each probe thread. As with the
+probes, {\bf reporter()} continues to loop until the program's termination.
+
+Compared with the Primes program, webprobe benefits from having more threads
+than available cores. The reason for this is that while each thread of the
+Primes program runs computations the entire time, much of the time a probe
+is executing, it is only waiting for \verb wget  to complete execution. Rather
+than waste all that time waiting, the CPU can be put to use launching more
+instances of \verb wget .
 
 \end{document}
