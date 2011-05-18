@@ -1,3 +1,4 @@
+\begin{document}
 \documentclass[12pt,letterpaper]{article}
 \title{Homework 4 Write-Up}
 \author{Aaron Okano, Jason Wong, Meenal Tambe, and Gowtham Vijayaragavan}
@@ -15,9 +16,6 @@
 \begin{tabbing}
 \>In
 \end{tabbing}the main function, all the variables and arrays are set up initially. Then the probe threads, which each work to probe a URL, are created. Then, the reporter thread is created. In the probe() function, a section of the code is locked, so that other threads cannot execute it. Then, a line is read, and it is unlocked. The locking occurs because many threads may be modifying the same thing, so it is a safeguard. Locking and unlocking was one of the most crucial components of the program. The time is checked per access, and then the access count is incremented.
-\begin{tabbing}
-\>Next, 
-\end{tabbing} Another important functions that was written was the probe function. What differed the most in this function from the other functions what that is was run by threads. 
 \begin{tabbing}
 \>Because
 \end{tabbing}the instructions asked to "repeatedly cycle through the list," the only way webprobe.cpp would be terminated was through the ctrl+c option, since the program needed to run continuously. Similar to the example on page 186 in the text, the threads in this program gave the illusion of a multi-tasking CPU, while in reality, everything was merely pushed onto the same stack. 
