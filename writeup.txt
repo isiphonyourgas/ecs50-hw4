@@ -1,7 +1,18 @@
 Write a COGENT explanation, along the lines of the "Gowtham and Noelle" story in class, of how the threads take turns in this application. Explain why it may be useful to have more threads than CPU cores for this program but not for the prime finder above. 
 
-	In the program, a web probe needed to be created a web probe that would read through a list of URLs in a file using a number of threads that the user entered. The file, urls.txt contains a list of URLs to use as examples. During the execution of the program, the user needed to enter ./webprobe urls.txt followed by two numbers to let the program know how many threads to produce in order to run the program. The first number was used to find the number of time the thread needed to access the web and the second number was needed to create the probe threads and the reporting thread. 
-	At the very begnning of the program PTHREAD_MUTEX_INITIALIZER was used twice to initialize the mutexes. Next, the load_recent function was made in order to read in wwidth's mose recent times. A "for" loop was made in order to continusouly read in the most recent time as the program ran. the next for loops was used if i was equal to wwidth. if this scenario occured, then whatever was written in wwidth before would be overwritten by the new value. This is how the program was able to read the most recent access time. 
-	Next, one of the most important functions was written: the probe function. What differed the most in this function from the other functions what that is was run by threads. 
-	Because the instructions asked to "repeatedly cycle through the list," the only way webprobe.cpp would be terminated was through the ctrl+c option, since the program needed to run continuously. Similar to the example on page 186 in the text, the threads in this program gave the illusion of a multi-tasking CPU, while in reality, everything was merely pushed onto the stack. 
+\begin{tabbing}
+\>In 
+\end{tabbing}the program, a we needed to be created a web probe that would read through a list of URLs in a file using a number of threads that the user entered. The file, urls.txt contains a list of URLs to use as examples. During the execution of the program, the user needed to enter ./webprobe urls.txt followed by two numbers to let the program know how many threads to produce in order to run the program. The first number was used to find the number of time the thread needed to access the web and the second number was needed to create the probe threads and the reporting thread. 
+\begin{tabbing}
+\>At
+\end{tabbing}the very begnning of the program PTHREAD_MUTEX_INITIALIZER was used twice to initialize the mutexes. Next, the load_recent function was made in order to read in wwidth's mose recent times. A "for" loop was made in order to continusouly read in the most recent time as the program ran. the next for loops was used if i was equal to wwidth. if this scenario occured, then whatever was written in wwidth before would be overwritten by the new value. This is how the program was able to read the most recent access time. 
+\begin{tabbing}
+\>In
+\end{tabbing}the main function, all the variables are set up initially and arrays are set up initially. Then the probe threads, which each work to probe a URL, are created. Then, the reporter thread is created. In the probe() function, a section of the code is locked, so that other threads cannot execute it. Then, a line is read, and it is unlocked. The locking occurs because many threads may be modifying the same thing, so it is a safeguard. The time is checked per access, and then the access count is incremented.
+\begin{tabbing}
+\>Next, 
+\end{tabbing} one of the most important functions was written: the probe function. What differed the most in this function from the other functions what that is was run by threads. 
+\begin{tabbing}
+\>Because
+\end{tabbing}the instructions asked to "repeatedly cycle through the list," the only way webprobe.cpp would be terminated was through the ctrl+c option, since the program needed to run continuously. Similar to the example on page 186 in the text, the threads in this program gave the illusion of a multi-tasking CPU, while in reality, everything was merely pushed onto the stack. 
 
