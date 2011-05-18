@@ -4,3 +4,5 @@ Write a COGENT explanation, along the lines of the "Gowtham and Noelle" story in
 	At the very begnning of the program PTHREAD_MUTEX_INITIALIZER was used twice to initialize the mutexes. Next, the load_recent function was made in order to read in wwidth's mose recent times. A "for" loop was made in order to continusouly read in the most recent time as the program ran. 
 
 	Because the instructions asked to "repeatedly cycle through the list," the only way webprobe.cpp would be terminated was through the ctrl+c option, since the program needed to run continuously.
+
+In the main function, all the variables are set up initially and arrays are set up initially. Then the probe threads, which each work to probe a URL, are created. Then, the reporter thread is created. In the probe() function, a section of the code is locked, so that other threads cannot execute it. Then, a line is read, and it is unlocked. The locking occurs because many threads may be modifying the same thing, so it is a safeguard. The time is checked per access, and then the access count is incremented.
