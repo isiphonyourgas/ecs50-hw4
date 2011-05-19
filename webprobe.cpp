@@ -142,6 +142,7 @@ void *reporter( void *threads )
       cout << "Threads " << i+1 << ": " << accesses[i] << endl;
     pthread_mutex_unlock(&mutex2);
   }
+  return 0;
 }
 
 int main( int argc, char *argv[] )
@@ -174,4 +175,5 @@ int main( int argc, char *argv[] )
 
   for( i = 0; i < numthreads; i++ )
     pthread_join( id[i], NULL );
+  return 0;
 }
